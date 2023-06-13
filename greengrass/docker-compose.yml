@@ -1,0 +1,33 @@
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: MIT-0
+
+# build
+# docker compose -f docker-compose.yml build 
+# run
+# docker compose -f docker-compose.yml up
+
+version: '3.7'
+
+services:
+  greengrass:
+    env_file:
+      .env
+    init: true
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: aws-iot-greengrass
+    image: x86_64/aws-iot-greengrass:2.5.3
+    expose:
+      - 1883
+      - 8883
+      - 443
+    ports:
+      - 1883:1883
+      - 8883:8883
+      - 443:443
+    volumes:
+      - ./greengrass-v2-certs/:/tmp/certs/:ro
+      - ./config.yml:/tmp/config.yml:ro
+      #- ~/.aws/:/root/.aws/:ro
+      #- ./aws-iot-device-sdk-python-v2/:/tmp/aws-iot-device-sdk-python-v2/
