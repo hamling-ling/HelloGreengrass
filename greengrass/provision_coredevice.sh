@@ -25,6 +25,10 @@ function DeleteAll() {
         if [ $? = 0 ]; then
             echo $TES_ROLE_ACCESS_NAME detatched from principal $pri
         fi
+        aws iot detach-policy --policy-name $THING_POLICY_NAME --target $pri
+        if [ $? = 0 ]; then
+            echo $THING_POLICY_NAME detatched from principal $pri
+        fi
 
         certId=$(echo $pri | sed "s/arn.*cert\///g")
         echo certId=$certId
@@ -53,6 +57,12 @@ function DeleteAll() {
     aws iot delete-policy --policy-name $TES_ROLE_ALIAS_POLICY_NAME #> /dev/null 2>&1
     if [ $? = 0 ]; then
         echo $TES_ROLE_ALIAS_POLICY_NAME deleted
+    fi
+
+    echo deleting $THING_POLICY_NAME
+    aws iot delete-policy --policy-name $THING_POLICY_NAME #> /dev/null 2>&1
+    if [ $? = 0 ]; then
+        echo $THING_POLICY_NAME deleted
     fi
 
     echo deleting $TES_ROLE_ALIAS_NAME
@@ -160,6 +170,18 @@ echo CertificateArn=$CertificateArn
 aws iot attach-thing-principal --thing-name $THING_NAME --principal $CertificateArn
 if [ $? != 0 ]; then
     echo failed attach thing principal thing-name=$THING_NAME , principal=$CertificateArn
+    exit 1
+fi
+
+aws iot create-policy --policy-name $THING_POLICY_NAME --policy-document file://policy_json/greengrass-v2-iot-policy.json
+if [ $? != 0 ]; then
+    echo failed create thing policy name=$THING_POLICY_NAME
+    exit 1
+fi
+
+aws iot attach-policy --policy-name $THING_POLICY_NAME --target $CertificateArn
+if [ $? != 0 ]; then
+    echo failed attach thing policy name=$THING_POLICY_NAME to target $CertificateArn
     exit 1
 fi
 
