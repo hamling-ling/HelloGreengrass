@@ -167,6 +167,9 @@ mkdir -p $CERTS_DIR
 CertificateArn=$(aws iot create-keys-and-certificate --set-as-active --certificate-pem-outfile $CERTS_DIR/device.pem.crt --public-key-outfile $CERTS_DIR/public.pem.key --private-key-outfile $CERTS_DIR/private.pem.key | jq -r '.certificateArn')
 echo CertificateArn=$CertificateArn
 
+# Download Root Certificate
+curl -o $CERTS_DIR/AmazonRootCA1.pem https://www.amazontrust.com/repository/AmazonRootCA1.pem
+
 aws iot attach-thing-principal --thing-name $THING_NAME --principal $CertificateArn
 if [ $? != 0 ]; then
     echo failed attach thing principal thing-name=$THING_NAME , principal=$CertificateArn
