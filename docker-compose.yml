@@ -25,3 +25,16 @@ services:
     volumes:
       - ./greengrass/greengrass-v2-certs/:/tmp/certs/:ro
       - ./greengrass/config.yml:/tmp/config.yml:ro
+  awsiotsdk:
+    env_file:
+      awsiotsdk/.env
+    init: true
+    build:
+      context: awsiotsdk
+      dockerfile: Dockerfile
+    container_name: awsiotsdk
+    image: awsiotsdk:1.12.0
+    tty: true
+    volumes:
+      - ./awsiotsdk/certs:/tmp/certs:ro
+      - ./awsiotsdk/app:/app
