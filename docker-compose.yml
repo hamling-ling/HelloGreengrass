@@ -1,0 +1,40 @@
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: MIT-0
+
+# build
+# docker compose -f docker-compose.yml build 
+# run
+# docker compose -f docker-compose.yml up
+
+version: '3.7'
+
+services:
+  greengrass:
+    env_file:
+      greengrass/.env
+    init: true
+    build:
+      context: greengrass
+      dockerfile: Dockerfile
+    container_name: greengrass
+    image: greengrass:2.5.3
+    expose:
+      - 1883
+      - 8883
+      - 443
+    volumes:
+      - ./greengrass/certs/:/tmp/certs/:ro
+      - ./greengrass/config.yml:/tmp/config.yml:ro
+  awsiotsdk:
+    env_file:
+      awsiotsdk/.env
+    init: true
+    build:
+      context: awsiotsdk
+      dockerfile: Dockerfile
+    container_name: awsiotsdk
+    image: awsiotsdk:1.12.0
+    tty: true
+    volumes:
+      - ./awsiotsdk/certs:/tmp/certs:ro
+      - ./awsiotsdk/app:/app
