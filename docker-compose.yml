@@ -23,7 +23,7 @@ services:
       - 8883
       - 443
     volumes:
-      - ./greengrass/greengrass-v2-certs/:/tmp/certs/:ro
+      - ./greengrass/certs/:/tmp/certs/:ro
       - ./greengrass/config.yml:/tmp/config.yml:ro
   awsiotsdk:
     env_file:
